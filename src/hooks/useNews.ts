@@ -8,25 +8,25 @@ export const useNews = (category: Category, searchQuery: string) => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const loadNews = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = searchQuery
-        ? await searchNews(searchQuery)
-        : await fetchTopHeadlines(category);
-      // Filter out articles with missing data
-      const clean = data.articles.filter(
-        (a) => a.title !== "[Removed]" && a.urlToImage
-      );
-      setArticles(clean);
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError("Failed to load news. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [category, searchQuery]);
+ const loadNews = useCallback(async () => {
+  try {
+    setLoading(true);
+    setError(null);
+    const data = searchQuery
+      ? await searchNews(searchQuery)
+      : await fetchTopHeadlines(category);
+    const clean = data.articles.filter(
+      (a) => a.title !== "[Removed]" && a.urlToImage
+    );
+    setArticles(clean);
+    setLastUpdated(new Date());
+  } catch (err) {
+    console.error(err);
+    setError("Failed to load news. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+}, [category, searchQuery]);
 
   // Initial load + auto-refresh every 5 mins
   useEffect(() => {

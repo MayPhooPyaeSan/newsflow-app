@@ -9,7 +9,7 @@ export const fetchTopHeadlines = async (
   category: Category = "general",
   pageSize: number = 20
 ): Promise<NewsResponse> => {
-  const url = `${BASE_URL}/top-headlines?category=${category}&pageSize=${pageSize}&language=en&apiKey=${API_KEY}`;
+  const url = `${BASE_URL}/top-headlines?category=${category}&pageSize=${pageSize}&country=us&apiKey=${API_KEY}`;
   const { data } = await axios.get(PROXY + encodeURIComponent(url));
   return data;
 };
@@ -18,7 +18,7 @@ export const searchNews = async (
   query: string,
   pageSize: number = 20
 ): Promise<NewsResponse> => {
-  const url = `${BASE_URL}/everything?q=${query}&pageSize=${pageSize}&language=en&sortBy=publishedAt&apiKey=${API_KEY}`;
+  const url = `${BASE_URL}/everything?q=${query}&pageSize=${pageSize}&sortBy=publishedAt&apiKey=${API_KEY}`;
   const { data } = await axios.get(PROXY + encodeURIComponent(url));
   return data;
 };
