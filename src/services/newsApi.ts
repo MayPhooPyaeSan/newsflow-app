@@ -1,17 +1,16 @@
 import axios from "axios";
 import type { Category, NewsResponse } from "../types/news";
 
-// Uses local proxy in dev, Vercel function in production
-const BASE =
-  import.meta.env.DEV ? "http://localhost:3000/api/news" : "/api/news";
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
+const BASE_URL = "https://newsapi.org/v2";
+const PROXY = "https://corsproxy.io/?";
 
 export const fetchTopHeadlines = async (
   category: Category = "general",
   pageSize: number = 20
 ): Promise<NewsResponse> => {
-  const { data } = await axios.get(BASE, {
-    params: { type: "headlines", category, pageSize },
-  });
+  const url = `${BASE_URL}/top-headlines?category=${category}&pageSize=${pageSize}&language=en&apiKey=${API_KEY}`;
+  const { data } = await axios.get(PROXY + encodeURIComponent(url));
   return data;
 };
 
@@ -19,8 +18,7 @@ export const searchNews = async (
   query: string,
   pageSize: number = 20
 ): Promise<NewsResponse> => {
-  const { data } = await axios.get(BASE, {
-    params: { type: "search", query, pageSize },
-  });
+  const url = `${BASE_URL}/everything?q=${query}&pageSize=${pageSize}&language=en&sortBy=publishedAt&apiKey=${API_KEY}`;
+  const { data } = await axios.get(PROXY + encodeURIComponent(url));
   return data;
 };
