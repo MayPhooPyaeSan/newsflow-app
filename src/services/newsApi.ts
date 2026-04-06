@@ -3,10 +3,27 @@ import type { Category, NewsResponse } from "../types/news";
 
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 const BASE_URL = "https://newsapi.org/v2";
-const PROXY = "https://api.allorigins.win/raw?url=";
+
+const fetchWithProxy = async (url: string) => {
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://thingproxy.freeboard.io/fetch/${url}`,
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const { data } = await axios.get(proxy, { timeout: 8000 });
+      return data;
+    } catch {
+      continue;
+    }
+  }
+  throw new Error("All proxies failed");
+};
 
 const CATEGORY_QUERIES: Record<Category, string> = {
-  general: "",
+  general: "world news",
   technology: "technology",
   business: "business",
   sports: "sports",
@@ -19,17 +36,13 @@ export const fetchTopHeadlines = async (
   category: Category = "general",
   pageSize: number = 20
 ): Promise<NewsResponse> => {
-  // Use top-headlines for general, everything+query for others
   if (category === "general") {
     const url = `${BASE_URL}/top-headlines?country=us&pageSize=${pageSize}&apiKey=${API_KEY}`;
-    const { data } = await axios.get(PROXY + encodeURIComponent(url));
-    return data;
-  } else {
-    const q = CATEGORY_QUERIES[category];
-    const url = `${BASE_URL}/everything?q=${q}&pageSize=${pageSize}&sortBy=publishedAt&language=en&apiKey=${API_KEY}`;
-    const { data } = await axios.get(PROXY + encodeURIComponent(url));
-    return data;
+    return fetchWithProxy(url);
   }
+  const q = CATEGORY_QUERIES[category];
+  const url = `${BASE_URL}/everything?q=${q}&pageSize=${pageSize}&sortBy=publishedAt&language=en&apiKey=${API_KEY}`;
+  return fetchWithProxy(url);
 };
 
 export const searchNews = async (
@@ -37,6 +50,5 @@ export const searchNews = async (
   pageSize: number = 20
 ): Promise<NewsResponse> => {
   const url = `${BASE_URL}/everything?q=${query}&pageSize=${pageSize}&sortBy=publishedAt&language=en&apiKey=${API_KEY}`;
-  const { data } = await axios.get(PROXY + encodeURIComponent(url));
-  return data;
+  return fetchWithProxy(url);
 };
