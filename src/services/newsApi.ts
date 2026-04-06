@@ -3,7 +3,7 @@ import type { Category, NewsResponse } from "../types/news";
 
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 const BASE_URL = "https://newsapi.org/v2";
-const PROXY = "https://corsproxy.io/?";
+const PROXY = "https://api.allorigins.win/raw?url=";
 
 export const fetchTopHeadlines = async (
   category: Category = "general",
